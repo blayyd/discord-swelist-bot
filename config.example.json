@@ -1,0 +1,33 @@
+{
+  "channel_id": 123456789012345678,
+  "poll_minutes": 15,
+  "include_newgrad": true,
+  "internship_listings_url": "https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/refs/heads/dev/.github/scripts/listings.json",
+  "newgrad_listings_url": "https://raw.githubusercontent.com/SimplifyJobs/New-Grad-Positions/refs/heads/dev/.github/scripts/listings.json",
+  "category_roles": {
+    "Software": 111,
+    "Product": 222,
+    "AI/ML/Data": 333,
+    "Quantitative": 444,
+    "Hardware": 555
+  },
+  "location_roles": {
+    "CA": 666,
+    "NY": 777,
+    "Remote": 888
+  },
+  "notify_channels": [
+    {
+      "channel_id": 123456789012345678,
+      "job_types": ["internship"],
+      "categories": ["Hardware", "Software Engineering"],
+      "location": "CA"
+    },
+    {
+      "channel_id": 987654321098765432,
+      "job_types": ["newgrad"],
+      "categories": [],
+      "location": "all"
+    }
+  ]
+}
