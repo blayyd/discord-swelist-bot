@@ -6,12 +6,6 @@ from typing import Any, Literal
 
 import aiohttp
 
-try:
-    from swelist.main import filter_by_location  # type: ignore
-except Exception:  # pragma: no cover
-    filter_by_location = None  # type: ignore
-
-
 DEFAULT_INTERNSHIP_LISTINGS_URL = (
     "https://raw.githubusercontent.com/SimplifyJobs/Summer2026-Internships/refs/heads/dev/"
     ".github/scripts/listings.json"
@@ -103,36 +97,34 @@ async def fetch_role(
 
 
 def match_locations(jobs: list[dict[str, Any]], location_query: str) -> list[dict[str, Any]]:
-    if filter_by_location is None:
-        q = (location_query or "").strip().lower()
-        if not q or q == "all":
-            return jobs
+    q = (location_query or "").strip().lower()
+    if not q or q == "all":
+        return jobs
 
-        user_locations = [loc.strip().lower() for loc in location_query.split(",") if loc.strip()]
-        out: list[dict[str, Any]] = []
-        for job in jobs:
-            job_locations = job.get("locations", [])
-            if not isinstance(job_locations, list):
-                continue
-            loc_norms = [l.strip().lower() for l in job_locations if isinstance(l, str) and l.strip()]
+    user_locations = [loc.strip().lower() for loc in location_query.split(",") if loc.strip()]
+    out: list[dict[str, Any]] = []
+    for job in jobs:
+        job_locations = job.get("locations", [])
+        if not isinstance(job_locations, list):
+            continue
+        loc_norms = [l.strip().lower() for l in job_locations if isinstance(l, str) and l.strip()]
 
-            matched = False
-            for user_loc in user_locations:
-                if len(user_loc) == 2:
-                    if any(ln.endswith(f", {user_loc}") or ln.endswith(f" {user_loc}") for ln in loc_norms):
-                        matched = True
-                        break
-                else:
-                    if any(user_loc in ln for ln in loc_norms):
-                        matched = True
-                        break
+        matched = False
+        for user_loc in user_locations:
+            if len(user_loc) == 2:
+                # Treat as state/province code.
+                if any(ln.endswith(f", {user_loc}") or ln.endswith(f" {user_loc}") for ln in loc_norms):
+                    matched = True
+                    break
+            else:
+                if any(user_loc in ln for ln in loc_norms):
+                    matched = True
+                    break
 
-            if matched:
-                out.append(job)
+        if matched:
+            out.append(job)
 
-        return out
-
-    return filter_by_location(jobs, location_query)
+    return out
 
 
 def filter_by_keywords(jobs: list[dict[str, Any]], keywords: str) -> list[dict[str, Any]]:

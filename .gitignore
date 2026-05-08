@@ -22,3 +22,7 @@ state.db
 dist/
 build/
 *.egg-info/
+
+# sqlite WAL
+state.db-wal
+state.db-shm
