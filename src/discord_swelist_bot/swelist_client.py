@@ -45,16 +45,12 @@ async def _fetch_json(url: str) -> list[dict[str, Any]]:
 def _is_active_and_visible(job: dict[str, Any]) -> bool:
     if not job.get("active", False):
         return False
-    # Some entries omit is_visible; treat missing as visible.
     if job.get("is_visible") is False:
         return False
     return True
 
 
 def filter_by_timeframe(jobs: list[dict[str, Any]], timeframe: str) -> list[dict[str, Any]]:
-    """
-    Keep postings whose date_posted is within timeframe (swelist semantics).
-    """
     tf = (timeframe or "lastday").strip().lower()
     seconds = 60 * 60 * 24
     if tf == "lastweek":
@@ -99,9 +95,6 @@ async def fetch_role(
     internship_url: str,
     newgrad_url: str,
 ) -> list[dict[str, Any]]:
-    """
-    Fetch a single role (internship or newgrad) and return active+visible postings.
-    """
     if role == "internship":
         data = await _fetch_json(internship_url)
     else:
@@ -110,13 +103,11 @@ async def fetch_role(
 
 
 def match_locations(jobs: list[dict[str, Any]], location_query: str) -> list[dict[str, Any]]:
-    """
-    Match jobs using swelist's semantics when available.
-    """
     if filter_by_location is None:
         q = (location_query or "").strip().lower()
         if not q or q == "all":
             return jobs
+
         user_locations = [loc.strip().lower() for loc in location_query.split(",") if loc.strip()]
         out: list[dict[str, Any]] = []
         for job in jobs:
@@ -128,8 +119,6 @@ def match_locations(jobs: list[dict[str, Any]], location_query: str) -> list[dic
             matched = False
             for user_loc in user_locations:
                 if len(user_loc) == 2:
-                    # Treat as state/province code. Require it to be the final token,
-                    # e.g. "San Francisco, CA" or "San Francisco CA".
                     if any(ln.endswith(f", {user_loc}") or ln.endswith(f" {user_loc}") for ln in loc_norms):
                         matched = True
                         break
@@ -147,7 +136,6 @@ def match_locations(jobs: list[dict[str, Any]], location_query: str) -> list[dic
 
 
 def filter_by_keywords(jobs: list[dict[str, Any]], keywords: str) -> list[dict[str, Any]]:
-    """Substring match (case-insensitive) on company_name OR title."""
     q = (keywords or "").strip()
     if not q:
         return jobs
@@ -164,10 +152,6 @@ def filter_by_keywords(jobs: list[dict[str, Any]], keywords: str) -> list[dict[s
 
 
 def sort_jobs(jobs: list[dict[str, Any]], sort_key: str) -> list[dict[str, Any]]:
-    """
-    sort_key: date_posted (newest first), company, title.
-    Tie-breakers: company then title for date_posted; secondary sort for company/title modes.
-    """
     sk = (sort_key or "date_posted").strip().lower()
     if sk == "date_posted":
 
@@ -179,25 +163,25 @@ def sort_jobs(jobs: list[dict[str, Any]], sort_key: str) -> list[dict[str, Any]]
             return (ts, comp, tit)
 
         return sorted(jobs, key=sort_key_fn)
+
     if sk == "company":
 
         def sort_key_fn(j: dict[str, Any]) -> tuple[str, str]:
             return ((j.get("company_name") or "").lower(), (j.get("title") or "").lower())
 
         return sorted(jobs, key=sort_key_fn)
+
     if sk == "title":
 
         def sort_key_fn(j: dict[str, Any]) -> tuple[str, str]:
             return ((j.get("title") or "").lower(), (j.get("company_name") or "").lower())
 
         return sorted(jobs, key=sort_key_fn)
+
     raise ValueError("sort must be one of: date_posted, company, title")
 
 
 def filter_by_category(jobs: list[dict[str, Any]], category_query: str) -> list[dict[str, Any]]:
-    """
-    Filter by SimplifyJobs 'category'. Case-insensitive exact match.
-    """
     q = (category_query or "").strip()
     if not q or q.lower() == "all":
         return jobs

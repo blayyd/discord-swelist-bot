@@ -68,7 +68,7 @@ Edit `config.json`:
 py -m venv .venv
 .venv\\Scripts\\activate
 pip install -r requirements.txt
-python bot.py
+python -m discord_swelist_bot
 ```
 
 ## Slash commands

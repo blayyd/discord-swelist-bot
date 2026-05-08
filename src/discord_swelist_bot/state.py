@@ -75,3 +75,4 @@ class State:
                 "INSERT OR IGNORE INTO seen_jobs(job_id, first_seen_ts) VALUES(?, ?)",
                 rows,
             )
+

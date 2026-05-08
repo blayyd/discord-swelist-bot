@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from swelist_client import DEFAULT_INTERNSHIP_LISTINGS_URL, DEFAULT_NEWGRAD_LISTINGS_URL
+from .swelist_client import DEFAULT_INTERNSHIP_LISTINGS_URL, DEFAULT_NEWGRAD_LISTINGS_URL
 
 
 @dataclass(frozen=True)
@@ -19,6 +19,7 @@ class NotifyChannel:
 @dataclass(frozen=True)
 class BotConfig:
     """Primary channel id for status/legacy; when using notify_channels-only config, defaults to first target."""
+
     channel_id: int
     poll_minutes: int
     include_newgrad: bool
@@ -159,9 +160,7 @@ def load_config(path: str | Path = "config.json") -> BotConfig:
     if not isinstance(include_newgrad, bool):
         raise ValueError("include_newgrad must be a boolean")
 
-    internship_listings_url = _listing_url(
-        raw, "internship_listings_url", DEFAULT_INTERNSHIP_LISTINGS_URL
-    )
+    internship_listings_url = _listing_url(raw, "internship_listings_url", DEFAULT_INTERNSHIP_LISTINGS_URL)
     newgrad_listings_url = _listing_url(raw, "newgrad_listings_url", DEFAULT_NEWGRAD_LISTINGS_URL)
 
     notify_channels = _parse_notify_channels(
@@ -188,3 +187,4 @@ def load_config(path: str | Path = "config.json") -> BotConfig:
         location_roles=location_roles,
         notify_channels=notify_channels,
     )
+

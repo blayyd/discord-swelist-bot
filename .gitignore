@@ -17,3 +17,8 @@ pip-wheel-metadata/
 .env
 config.json
 state.db
+
+# packaging / builds
+dist/
+build/
+*.egg-info/

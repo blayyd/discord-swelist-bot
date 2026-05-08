@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Iterable
+from typing import Any
 
 import discord
 
-from config import BotConfig
+from .config import BotConfig
 
 
 @dataclass(frozen=True)
@@ -43,7 +43,6 @@ def compute_mentions(job: dict[str, Any], cfg: BotConfig) -> Mentions:
         k = key.strip().lower()
         if not k:
             continue
-        # Heuristic: 2-letter keys match end-of-location (state code)
         if len(k) == 2:
             if any(l.strip().lower().endswith(k) for l in loc_texts):
                 role_ids.add(rid)

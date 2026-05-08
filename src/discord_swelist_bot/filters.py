@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from swelist_client import match_locations
+from .swelist_client import match_locations
 
 
 def job_matches_notify_target(
@@ -13,7 +13,6 @@ def job_matches_notify_target(
     categories: list[str],
     location: str,
 ) -> bool:
-    """Return True if this job should be posted to a notify target with the given filters."""
     allowed = {x.strip().lower() for x in job_types if x and str(x).strip()}
     if allowed and kind not in allowed:
         return False
@@ -30,3 +29,4 @@ def job_matches_notify_target(
 
     matched = match_locations([job], loc)
     return len(matched) > 0
+
